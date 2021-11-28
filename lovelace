@@ -1,0 +1,291 @@
+type: custom:vertical-stack-in-card
+cards:
+  - type: entities
+    entities:
+      - type: custom:template-entity-row
+        entity: sensor.crypto_btc
+        name: '{{ state_attr(config.entity, ''name'') }}'
+        secondary: '{{ state_attr(config.entity, ''symbol'') }}'
+        image: '{{ state_attr(config.entity, ''logo_url'') }}'
+        state: >-
+          £{{"{:,.2f}".format(state_attr(config.entity, 'price') |
+          round(2,default=0))}}
+      - type: custom:template-entity-row
+        entity: sensor.crypto_btc
+        name: High
+        icon: mdi:currency-usd
+        state: >-
+          £{{"{:,.2f}".format(state_attr(config.entity, 'high') | round
+          (2,default=0))}}
+        secondary: >-
+          {{ as_timestamp(state_attr(config.entity, 'high_timestamp'),0) |
+          timestamp_custom('%d-%m-%Y %H:%M') }}
+      - type: custom:template-entity-row
+        entity: sensor.crypto_btc
+        name: Crypto Rank
+        icon: mdi:chart-line
+        state: '{{ state_attr(config.entity, ''rank'') }}'
+        secondary: >-
+          £{{"{:,}".format(state_attr(config.entity,
+          'market_cap')|int(default=0))}}
+      - entity: input_select.crypto_graph_period
+        name: Graph Duration
+  - type: custom:config-template-card
+    variables:
+      - states['input_select.crypto_graph_period'].state
+    entities:
+      - input_select.crypto_graph_period
+    card:
+      type: custom:apexcharts-card
+      update_interval: 1h
+      graph_span: ${vars[0]}
+      yaxis:
+        - apex_config:
+            tickAmount: 4
+            forceNiceScale: true
+            decimalsInFloat: 0
+      series:
+        - entity: sensor.crypto_btc
+          stroke_width: 1
+          type: area
+          show:
+            name_in_header: false
+  - type: grid
+    cards:
+      - type: custom:button-card
+        entity: sensor.crypto_btc_1_hr
+        aspect_ratio: 1/0.7
+        name: 1 hour
+        size: 50%
+        styles:
+          img_cell:
+            - display: contents
+          icon:
+            - margin: 0
+            - position: relative
+          name:
+            - font-size: 15px
+            - font-weight: bold
+            - justify-self: end
+          grid:
+            - grid-template-areas: '"n i" "price ." "percent perc"'
+            - grid-template-columns: 1fr 40px
+            - grid-template-rows: 1fr 1fr 1fr
+          custom_fields:
+            percent:
+              - justify-self: end
+              - font-size: 14px
+            perc:
+              - justify-self: start
+              - padding-left: 2px
+              - font-size: 14px
+            price:
+              - justify-self: end
+              - font-size: 14px
+        state:
+          - operator: <
+            value: 0
+            styles:
+              card:
+                - color: red
+              icon:
+                - color: red
+            icon: mdi:arrow-down-bold
+          - operator: '>'
+            value: 0
+            styles:
+              card:
+                - color: green
+              icon:
+                - color: green
+            icon: mdi:arrow-up-bold
+          - value: 0
+            icon: mdi:arrow-right-bold
+        custom_fields:
+          price: |
+            [[[
+              return Intl.NumberFormat('en-US', { style: 'currency', currency: 'GBP' }).format(entity.state)
+            ]]]
+          percent: |
+            [[[
+              return Intl.NumberFormat('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}).format(entity.attributes.price_change_pct*100)
+            ]]]
+          perc: '%'
+      - type: custom:button-card
+        entity: sensor.crypto_btc_1_d
+        aspect_ratio: 1/0.7
+        name: 1 day
+        size: 50%
+        styles:
+          img_cell:
+            - display: contents
+          icon:
+            - margin: 0
+            - position: relative
+          name:
+            - font-size: 15px
+            - font-weight: bold
+            - justify-self: end
+          grid:
+            - grid-template-areas: '"n i" "price ." "percent perc"'
+            - grid-template-columns: 1fr 40px
+            - grid-template-rows: 1fr 1fr 1fr
+          custom_fields:
+            percent:
+              - justify-self: end
+              - font-size: 14px
+            perc:
+              - justify-self: start
+              - padding-left: 2px
+              - font-size: 14px
+            price:
+              - justify-self: end
+              - font-size: 14px
+        state:
+          - operator: <
+            value: 0
+            styles:
+              card:
+                - color: red
+              icon:
+                - color: red
+            icon: mdi:arrow-down-bold
+          - operator: '>'
+            value: 0
+            styles:
+              card:
+                - color: green
+              icon:
+                - color: green
+            icon: mdi:arrow-up-bold
+          - value: 0
+            icon: mdi:arrow-right-bold
+        custom_fields:
+          price: |
+            [[[
+              return Intl.NumberFormat('en-US', { style: 'currency', currency: 'GBP' }).format(entity.state)
+            ]]]
+          percent: |
+            [[[
+              return Intl.NumberFormat('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}).format(entity.attributes.price_change_pct*100)
+            ]]]
+          perc: '%'
+      - type: custom:button-card
+        entity: sensor.crypto_btc_7_d
+        aspect_ratio: 1/0.7
+        name: 7 day
+        size: 50%
+        styles:
+          img_cell:
+            - display: contents
+          icon:
+            - margin: 0
+            - position: relative
+          name:
+            - font-size: 15px
+            - font-weight: bold
+            - justify-self: end
+          grid:
+            - grid-template-areas: '"n i" "price ." "percent perc"'
+            - grid-template-columns: 1fr 40px
+            - grid-template-rows: 1fr 1fr 1fr
+          custom_fields:
+            percent:
+              - justify-self: end
+              - font-size: 14px
+            perc:
+              - justify-self: start
+              - padding-left: 2px
+              - font-size: 14px
+            price:
+              - justify-self: end
+              - font-size: 14px
+        state:
+          - operator: <
+            value: 0
+            styles:
+              card:
+                - color: red
+              icon:
+                - color: red
+            icon: mdi:arrow-down-bold
+          - operator: '>'
+            value: 0
+            styles:
+              card:
+                - color: green
+              icon:
+                - color: green
+            icon: mdi:arrow-up-bold
+          - value: 0
+            icon: mdi:arrow-right-bold
+        custom_fields:
+          price: |
+            [[[
+              return Intl.NumberFormat('en-US', { style: 'currency', currency: 'GBP' }).format(entity.state)
+            ]]]
+          percent: |
+            [[[
+              return Intl.NumberFormat('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}).format(entity.attributes.price_change_pct*100)
+            ]]]
+          perc: '%'
+      - type: custom:button-card
+        entity: sensor.crypto_btc_30_d
+        aspect_ratio: 1/0.7
+        name: 30 day
+        size: 50%
+        styles:
+          img_cell:
+            - display: contents
+          icon:
+            - margin: 0
+            - position: relative
+          name:
+            - font-size: 15px
+            - font-weight: bold
+            - justify-self: end
+          grid:
+            - grid-template-areas: '"n i" "price ." "percent perc"'
+            - grid-template-columns: 1fr 40px
+            - grid-template-rows: 1fr 1fr 1fr
+          custom_fields:
+            percent:
+              - justify-self: end
+              - font-size: 14px
+            perc:
+              - justify-self: start
+              - padding-left: 2px
+              - font-size: 14px
+            price:
+              - justify-self: end
+              - font-size: 14px
+        state:
+          - operator: <
+            value: 0
+            styles:
+              card:
+                - color: red
+              icon:
+                - color: red
+            icon: mdi:arrow-down-bold
+          - operator: '>'
+            value: 0
+            styles:
+              card:
+                - color: green
+              icon:
+                - color: green
+            icon: mdi:arrow-up-bold
+          - value: 0
+            icon: mdi:arrow-right-bold
+        custom_fields:
+          price: |
+            [[[
+              return Intl.NumberFormat('en-US', { style: 'currency', currency: 'GBP' }).format(entity.state)
+            ]]]
+          percent: |
+            [[[
+              return Intl.NumberFormat('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}).format(entity.attributes.price_change_pct*100)
+            ]]]
+          perc: '%'
+    columns: 4
